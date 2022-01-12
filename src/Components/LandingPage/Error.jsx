@@ -1,0 +1,28 @@
+import React from "react";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+const Error = ({showError, setShowError}) => {
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowError(false);
+  };
+
+
+  return (
+    <Snackbar open={showError} autoHideDuration={6000} onClose={handleClose}>
+      <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+        This is a success message!
+      </Alert>
+    </Snackbar>
+  );
+};
+
+export default Error;

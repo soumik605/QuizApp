@@ -1,47 +1,69 @@
 import {
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-    Typography,
-  } from "@mui/material";
-  import { makeStyles } from "@mui/styles";
-  import { Box } from "@mui/system";
-  import React from "react";
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { Box } from "@mui/system";
+import React from "react";
+import { changeLimit } from "../../service/Reducers/CurrentQuestion";
+import { useDispatch, useSelector } from "react-redux";
 
-  
-  const style = makeStyles((theme) => ({
-    inputBox: {
-      alignItems: "center",
-      display: "flex",
-      marginBottom: theme.spacing(1),
-      justifyContent:"center"
-
-    },
-  }));
+const style = makeStyles((theme) => ({
+  inputBox: {
+    alignItems: "center",
+    display: "flex",
+    marginBottom: theme.spacing(1),
+    justifyContent: "center",
+  },
+}));
 
 const Limit = () => {
-    const classes = style();
+  const classes = style();
+  const dispatch = useDispatch();
+  const currentQuestion = useSelector((state) => state.currentQuestion);
 
-    return (
-        <Box className={classes.inputBox}>
-          <Typography variant="h6">Select A Catagory</Typography>
-          <FormControl sx={{ minWidth: "100px", ml: 2 }} size="small">
-            <InputLabel id="demo-simple-select-label">Age</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={30}
-              label="Age"
-              //onChange={handleChange}
-            >
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-    )
-}
+  const options = [10, 15, 20, 25, 30];
 
-export default Limit
+  const handleChange = (e) => {
+    dispatch(changeLimit(e.target.value));
+  };
+
+  return (
+    <Box className={classes.inputBox}>
+      <Box
+        sx={{
+          width: "50%",
+          textAlign: "right",
+          pr: 2,
+          boxSizing: "border-box",
+        }}
+      >
+        <Typography variant="h6">Total Question</Typography>
+      </Box>
+
+      <Box sx={{ width: "50%" }}>
+        <FormControl sx={{ minWidth: "100px"}} size="small">
+          <InputLabel id="demo-simple-select-label">Limit</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={currentQuestion.limit}
+            label="Limit"
+            onChange={handleChange}
+          >
+            {options.map((option, index) => (
+              <MenuItem value={option} key={index}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+    </Box>
+  );
+};
+
+export default Limit;

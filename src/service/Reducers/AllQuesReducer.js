@@ -49,6 +49,32 @@ export const allQuestionSlice = createSlice({
         }
       });
     },
+
+    updateWatchTime: (state, action) => {
+      return state.map((item, index) => {
+        if (index === action.payload) {
+          return {
+            ...item,
+            timeTaken: item.timeTaken + 1,
+          };
+        } else {
+          return item;
+        }
+      });
+    },
+
+    updateMark: (state, action) => {
+      return state.map((item, index) => {
+        if (index === action.payload) {
+          return {
+            ...item,
+            markToReview: !item.markToReview,
+          };
+        } else {
+          return item;
+        }
+      });
+    },
   },
 });
 
@@ -57,6 +83,8 @@ export const {
   changeCurrentAsVisited,
   answerAQuestion,
   removeResponse,
+  updateWatchTime,
+  updateMark
 } = allQuestionSlice.actions;
 
 export default allQuestionSlice.reducer;

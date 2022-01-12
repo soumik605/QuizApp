@@ -1,20 +1,20 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import {useSelector} from 'react-redux'
+import { useDispatch, useSelector } from "react-redux";
 
 import LeftBar from "./LeftBar/LeftBar";
 import RightBar from "./RightBar/RightBar";
+import { useNavigate } from "react-router-dom";
+import { updateWatchTime } from "../../service/Reducers/AllQuesReducer";
+import Navbar from "../Navbar/Navbar";
+import { updateTotalTime } from "../../service/Reducers/CurrentQuestion";
 
 const drawerWidth = 240;
 const drawerWidthMd = 360;
@@ -44,30 +44,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    [theme.breakpoints.down("md")]: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: `${drawerWidth}px`,
-    },
-    [theme.breakpoints.up("md")]: {
-      width: `calc(100% - ${drawerWidthMd}px)`,
-      marginLeft: `${drawerWidthMd}px`,
-    },
-
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -76,31 +52,40 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function PersistentDrawerLeft() {
+export default function QuizPage() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
-  const currentQuestion = useSelector(state => state.currentQuestion)
+  const [open, setOpen] = useState(true);
+  const {index} = useSelector((state) => state.currentQuestion);
+  const allQuestion = useSelector((state) => state.allQuestion);
+  const {totalTime} = useSelector((state) => state.currentQuestion);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const timer = () => dispatch(updateWatchTime(index));
+  const totalTimer = () => {
+    dispatch(updateTotalTime())
+    totalTime >= allQuestion.length * 60 && navigate("/result");
+  };
+
+  useEffect(() => {
+    const id = setInterval(totalTimer, 1000);
+    return () => clearInterval(id);
+  }, [])
+
+  useEffect(() => {
+    const id = setInterval(timer, 1000);
+    return () => clearInterval(id);
+  }, [index]);
+
+  useEffect(() => {
+    !allQuestion.length && navigate("/");
+  }, [allQuestion]);
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
 
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={() => setOpen(true)}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: "none" }) }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Question No. {currentQuestion.index + 1}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Navbar open={open} setOpen={setOpen} />
 
       <Drawer
         sx={{
@@ -132,7 +117,7 @@ export default function PersistentDrawerLeft() {
         </DrawerHeader>
 
         <Divider />
-       <LeftBar />
+        <LeftBar />
       </Drawer>
 
       <Main open={open}>

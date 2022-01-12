@@ -1,16 +1,13 @@
 import { Box, Button, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  answerAQuestion,
-  changeCurrentAsVisited,
-  removeResponse,
-} from "../../../service/Reducers/AllQuesReducer";
-import { changeCurrentQuestionIndex } from "../../../service/Reducers/CurrentQuestion";
+import { removeResponse } from "../../../service/Reducers/AllQuesReducer";
 import { useNavigate } from "react-router-dom";
+import Option from "./Option";
+import BtmBtns from "./BtmBtns";
+import { escape, unescape } from "html-escaper";
+import Details from "./Details";
 
 const style = makeStyles((theme) => ({
   quesCont: {
@@ -23,108 +20,68 @@ const RightBar = () => {
   const currentQuestion = useSelector((state) => state.currentQuestion);
   const allQuestion = useSelector((state) => state.allQuestion);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const cqIndex = currentQuestion.index;
+  const question = allQuestion[cqIndex];
 
-  const answerQuestion = (item) => {
-    console.log(item)
-    dispatch(
-      allQuestion[currentQuestion.index].userAnswer !== item &&
-        answerAQuestion({ questionIndex: currentQuestion.index, answer: item })
-    );
-  };
 
-  const prevQuestion = () => {
-    dispatch(changeCurrentQuestionIndex(currentQuestion.index - 1));
-    dispatch(changeCurrentAsVisited(currentQuestion.index - 1));
-  };
+  function unescape(s) {
+    return s
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&#39;/g, "'")
+      .replace(/&#039;/g, "'")
+      .replace(/&quot;/g, '"');
+  }
 
-  const nextQuestion = () => {
-    dispatch(changeCurrentQuestionIndex(currentQuestion.index + 1));
-    dispatch(changeCurrentAsVisited(currentQuestion.index + 1));
-  };
+  const newQuestion = unescape(question.question);
+
 
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "right" }}>
-        {allQuestion.length > 0 &&
-          allQuestion[currentQuestion.index].userAnswer !== null && (
-            <Button
-              onClick={() => dispatch(removeResponse(currentQuestion.index))}
-            >
-              Clear Response
-            </Button>
-          )}
+        {allQuestion.length > 0 && question.userAnswer !== null && (
+          <Button onClick={() => dispatch(removeResponse(cqIndex))}>
+            Clear Response
+          </Button>
+        )}
       </Box>
 
       <Box maxWidth="md" className={classes.quesCont}>
         <Typography variant="h6" textAlign="center">
-          {allQuestion.length > 0 &&
-            allQuestion[currentQuestion.index].question}
+          {allQuestion.length > 0 && newQuestion}
         </Typography>
+
         <Box
           display="flex"
           flexWrap="wrap"
           sx={{ justifyContent: "center", mt: 2 }}
         >
           {allQuestion.length > 0 &&
-            [0, 1, 2, 3].map((item, index) => (
-              <Button
-                color={
-                  allQuestion[currentQuestion.index].userAnswer ===
-                  allQuestion[currentQuestion.index].answers[item]
-                    ? "secondary"
-                    : "info"
-                }
-                variant={
-                  allQuestion[currentQuestion.index].userAnswer ===
-                  allQuestion[currentQuestion.index].answers[item]
-                    ? "contained"
-                    : "outlined"
-                }
-                key={item}
-                sx={{ width: "40%", margin: 1, boxSizing: "border-box" }}
-                onClick={() => answerQuestion(allQuestion[currentQuestion.index].answers[item])}
-              >
-                {allQuestion[currentQuestion.index].answers[item]}
-              </Button>
-            ))}
+            [0, 1, 2, 3].map((item, index) => {
+              return (
+                allQuestion[cqIndex].answers[item] && (
+                  <Option
+                    question={question}
+                    item={item}
+                    cqIndex={cqIndex}
+                    key={item}
+                  />
+                )
+              );
+            })}
         </Box>
       </Box>
+
       <Box
         maxWidth="md"
         display="flex"
         sx={{ m: "80px auto 0" }}
-        justifyContent={
-          currentQuestion.index === 0 ? "flex-end" : "space-between"
-        }
+        justifyContent={"space-between"}
       >
-        {currentQuestion.index !== 0 && (
-          <Button
-            variant="text"
-            startIcon={<ArrowBackIcon />}
-            onClick={prevQuestion}
-          >
-            Previous
-          </Button>
-        )}
-        {currentQuestion.index + 1 !== allQuestion.length ? (
-          <Button
-            variant="contained"
-            endIcon={<ArrowForwardIcon />}
-            onClick={nextQuestion}
-          >
-            Next
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            endIcon={<ArrowForwardIcon />}
-            onClick={() => navigate("/result")}
-          >
-            Submit
-          </Button>
-        )}
+        <BtmBtns cqIndex={cqIndex} />
       </Box>
+      <Details />
     </>
   );
 };

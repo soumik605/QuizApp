@@ -51,6 +51,41 @@ const LeftBar = () => {
           </Grid>
         ))}
       </Grid>
+
+      <Box sx={{ mt: 10, display: "flex", flexDirection: "column" }}>
+        <Button
+        size="small"
+          color="info"
+          variant="contained"
+          sx={{ width: "fit-content", m: 1 }}
+        >
+          Visited Question
+        </Button>
+        <Button
+        size="small"
+          color="success"
+          variant="contained"
+          sx={{ width: "fit-content", m: 1 }}
+        >
+          Answered Question
+        </Button>
+        <Button
+        size="small"
+          color="warning"
+          variant="contained"
+          sx={{ width: "fit-content", m: 1 }}
+        >
+          Current Question
+        </Button>
+        <Button
+        size="small"
+          color="info"
+          variant="outlined"
+          sx={{ width: "fit-content", m: 1 }}
+        >
+          Not visited
+        </Button>
+      </Box>
     </Box>
   );
 };
