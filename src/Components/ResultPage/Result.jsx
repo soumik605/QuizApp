@@ -11,10 +11,16 @@ import TimelineDot from "@mui/lab/TimelineDot";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import TopBar from "./TopBar";
+import { useNavigate } from "react-router-dom";
 
 const Result = () => {
   const allQuestion = useSelector((state) => state.allQuestion);
+  const { status } = useSelector((state) => state.currentQuestion);
+  const navigate = useNavigate()
 
+  useEffect(() => {
+    status !== "finished" && navigate("/");
+  }, []);
 
   function unescape(s) {
     return s
@@ -25,17 +31,17 @@ const Result = () => {
       .replace(/&#039;/g, "'")
       .replace(/&quot;/g, '"');
   }
- 
+
   return (
     <Container maxWidth="md" sx={{ m: "0 auto" }}>
-     <TopBar />
+      <TopBar />
 
       <Box sx={{ mt: 3 }}>
         <Timeline position="right">
           {allQuestion.map((ques, index) => {
             var timestamp = ques.timeTaken;
             var hours = Math.floor(timestamp / 60 / 60);
-            var minutes = Math.floor(timestamp / 60) - (hours * 60);
+            var minutes = Math.floor(timestamp / 60) - hours * 60;
             var seconds = timestamp % 60;
             const newQuestion = unescape(ques.question);
 

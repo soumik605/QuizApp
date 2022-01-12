@@ -5,7 +5,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { Button } from "@mui/material";
 import { changeCurrentAsVisited, updateMark } from "../../../service/Reducers/AllQuesReducer";
-import { changeCurrentQuestionIndex } from "../../../service/Reducers/CurrentQuestion";
+import { changeCurrentQuestionIndex, setStatus } from "../../../service/Reducers/CurrentQuestion";
 
 const BtmBtns = ({ cqIndex }) => {
   const dispatch = useDispatch();
@@ -24,6 +24,11 @@ const BtmBtns = ({ cqIndex }) => {
 
   const updateAsMark = () => {
     dispatch(updateMark(cqIndex))
+  }
+
+  const submitAns = () => {
+    dispatch(setStatus("finished"))
+    navigate("/result")
   }
 
   return (
@@ -58,7 +63,7 @@ const BtmBtns = ({ cqIndex }) => {
         <Button
           variant="contained"
           endIcon={<ArrowForwardIcon />}
-          onClick={() => navigate("/result")}
+          onClick={submitAns}
         >
           Submit
         </Button>

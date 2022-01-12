@@ -6,23 +6,23 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const Error = ({showError, setShowError}) => {
+const MessagePage = ({show, setShow, message, type }) => {
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    setShowError(false);
+    setShow(false);
   };
 
 
   return (
-    <Snackbar open={showError} autoHideDuration={6000} onClose={handleClose}>
-      <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-        This is a success message!
+    <Snackbar open={show} autoHideDuration={6000} onClose={handleClose}>
+      <Alert onClose={handleClose} severity={type} sx={{ width: "100%" }}>
+        {message}
       </Alert>
     </Snackbar>
   );
 };
 
-export default Error;
+export default MessagePage;

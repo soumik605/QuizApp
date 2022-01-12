@@ -4,7 +4,6 @@ import { Box } from "@mui/system";
 import React, { useState } from "react";
 import Category from "./Category";
 import Difficult from "./Difficult";
-import Tags from "./Tags";
 import Limit from "./Limit";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -13,9 +12,8 @@ import {
   changeCurrentAsVisited,
   fetchNewQuestions,
 } from "../../service/Reducers/AllQuesReducer";
-import MuiAlert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
-import Error from "./Error";
+import { resetFields, setStatus } from "../../service/Reducers/CurrentQuestion";
+import MessagePage from "../Messages/MessagePage";
 import LoadingPage from "./LoadingPage";
 
 const style = makeStyles((theme) => ({
@@ -66,12 +64,13 @@ const Landing = () => {
             difficulty: data.difficulty,
             visited: false,
             userAnswer: null,
-            timeTaken : 0,
-            markToReview : false,
+            timeTaken: 0,
+            markToReview: false,
           });
         });
         dispatch(fetchNewQuestions(allQuestion));
         dispatch(changeCurrentAsVisited(0));
+        dispatch(setStatus("started"))
         setOpen(false);
         navigate("/quiz");
       })
@@ -81,18 +80,35 @@ const Landing = () => {
       });
   };
 
+  const resetAllFields = () => {
+    dispatch(resetFields());
+  };
+
+  const randomQuiz = () => {
+    dispatch(resetFields());
+    difficulty = "";
+    //limit = 10; user choice in random too
+    category = 0;
+    fetchQues();
+  };
+
   return (
     <>
-      <Error showError={showError} setShowError={setShowError} />
+      <MessagePage
+        show={showError}
+        setShow={setShowError}
+        type={"error"}
+        message={"Failed to load questions"}
+      />
 
       <Container>
         <Box className={classes.inputCont}>
-        <LoadingPage open={open} setOpen={setOpen} />
+          <LoadingPage open={open} setOpen={setOpen} />
           <Category />
           <Difficult />
           <Limit />
 
-          <Box display="flex" sx={{justifyContent:"center"}}>
+          <Box display="flex" sx={{ justifyContent: "center" }}>
             <Button
               variant="contained"
               color="success"
@@ -101,10 +117,15 @@ const Landing = () => {
             >
               Start
             </Button>
-            <Button variant="contained" sx={{ m: 1 }}>
+            <Button variant="contained" sx={{ m: 1 }} onClick={resetAllFields}>
               Reset
             </Button>
-            <Button variant="contained" color="warning" sx={{ m: 1 }}>
+            <Button
+              variant="contained"
+              color="warning"
+              sx={{ m: 1 }}
+              onClick={randomQuiz}
+            >
               Random Quiz
             </Button>
           </Box>

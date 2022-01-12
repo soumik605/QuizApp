@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { updateWatchTime } from "../../service/Reducers/AllQuesReducer";
 import Navbar from "../Navbar/Navbar";
 import { updateTotalTime } from "../../service/Reducers/CurrentQuestion";
+import MessagePage from "../Messages/MessagePage";
 
 const drawerWidth = 240;
 const drawerWidthMd = 360;
@@ -55,34 +56,50 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 export default function QuizPage() {
   const theme = useTheme();
   const [open, setOpen] = useState(true);
-  const {index} = useSelector((state) => state.currentQuestion);
+  const [showWarning, setShowWarning] = useState(false);
+  const { index, totalTime, status } = useSelector((state) => state.currentQuestion);
   const allQuestion = useSelector((state) => state.allQuestion);
-  const {totalTime} = useSelector((state) => state.currentQuestion);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const timer = () => dispatch(updateWatchTime(index));
   const totalTimer = () => {
-    dispatch(updateTotalTime())
+    dispatch(updateTotalTime());
+    allQuestion.length * 60 - totalTime < 590 && setShowWarning(true);
     totalTime >= allQuestion.length * 60 && navigate("/result");
   };
+
+  
+
+  useEffect(() => {
+    console.log(status)
+    status !== "started" && navigate("/");
+  }, [status,totalTime]);
+
+  useEffect(() => {
+    if (allQuestion.length === 0) {
+      navigate("/");
+    }
+  }, []);
 
   useEffect(() => {
     const id = setInterval(totalTimer, 1000);
     return () => clearInterval(id);
-  }, [])
+  }, []);
 
   useEffect(() => {
     const id = setInterval(timer, 1000);
     return () => clearInterval(id);
   }, [index]);
 
-  useEffect(() => {
-    !allQuestion.length && navigate("/");
-  }, [allQuestion]);
-
   return (
     <Box sx={{ display: "flex" }}>
+      <MessagePage
+        show={showWarning}
+        setShow={setShowWarning}
+        message={"Hurry !! Only 30 second left.."}
+        type={"warning"}
+      />
       <CssBaseline />
 
       <Navbar open={open} setOpen={setOpen} />

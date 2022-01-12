@@ -6,8 +6,9 @@ const initialState = {
   difficulty: "any",
   tags: [],
   limit: 10,
-  category:0,
-  totalTime : 0
+  category: 0,
+  totalTime: 0,
+  status : "notStarted"
 };
 
 export const currentQuestionSlice = createSlice({
@@ -30,17 +31,21 @@ export const currentQuestionSlice = createSlice({
       return { ...state, category: action.payload };
     },
 
-    changeTags: (state, action) => {
-      return { ...state, Tags: action.payload };
-    },
-
     updateTotalTime: (state, action) => {
       return { ...state, totalTime: state.totalTime + 1 };
     },
 
+    resetFields: (state, action) => {
+      return initialState;
+    },
+
+    setStatus : (state, action) => {
+      return {...state, status : action.payload}
+    }
+
   },
 });
 
-export const { changeCurrentQuestionIndex, changeDifficulty, changeLimit, changeCatagory, changeTags, updateTotalTime } = currentQuestionSlice.actions;
+export const { changeCurrentQuestionIndex, changeDifficulty, changeLimit, changeCatagory, updateTotalTime, resetFields, setStatus } = currentQuestionSlice.actions;
 
 export default currentQuestionSlice.reducer;

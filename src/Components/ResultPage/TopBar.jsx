@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import trophy from '../Images/trophy.jpg'
 
 const TopBar = () => {
   const allQuestion = useSelector((state) => state.allQuestion);
@@ -30,7 +31,7 @@ const TopBar = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <img
-        src="/Images/trophy.jpg"
+        src={trophy}
         alt="trophy"
         style={{
           width: "200px",
