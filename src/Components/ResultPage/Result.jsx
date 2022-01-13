@@ -22,6 +22,8 @@ const Result = () => {
     status !== "finished" && navigate("/");
   }, []);
 
+
+
   function unescape(s) {
     return s
       .replace(/&amp;/g, "&")

@@ -1,12 +1,16 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import trophy from '../Images/trophy.jpg'
+import { useDispatch, useSelector } from "react-redux";
+import trophy from "../Images/trophy.jpg";
+import { useNavigate } from "react-router-dom";
+import { resetFields } from "../../service/Reducers/CurrentQuestion";
 
 const TopBar = () => {
   const allQuestion = useSelector((state) => state.allQuestion);
   const [rightAns, setRightAns] = useState(0);
   const [wrongAns, setWrongAns] = useState(0);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (allQuestion) {
@@ -28,8 +32,16 @@ const TopBar = () => {
     }
   }, [allQuestion]);
 
+  const backToHome = () => {
+    dispatch(resetFields());
+    navigate("/");
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <Button variant="text" sx={{ m: 2, ml: "auto" }} onClick={backToHome}>
+        Back to Home
+      </Button>
       <img
         src={trophy}
         alt="trophy"
@@ -39,7 +51,7 @@ const TopBar = () => {
         }}
       />
       <Typography variant="h6" color="primary" sx={{ textAlign: "center" }}>
-        Score -  {rightAns} / {allQuestion.length}
+        Score - {rightAns} / {allQuestion.length}
       </Typography>
     </Box>
   );
